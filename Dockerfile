@@ -2,7 +2,7 @@
 ## Each instruction is annotated to clarify build intent and optimization rationale.
 
 ## Base image: official Node.js (latest). For production builds, pin a version like 'node:20-alpine'.
-FROM node 
+FROM node:14
 
 ## Set working directory inside the container. All subsequent relative paths are resolved from here.
 WORKDIR /app
