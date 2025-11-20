@@ -261,15 +261,15 @@ docker system prune -f
 ## 19. Architecture Diagram: Node ↔ Docker Network ↔ MongoDB
 
                    ┌─────────────────────────────┐
-                   │        Docker Host           │
-                   │  (your Windows/macOS system) │
+                   │        Docker Host          │
+                   │ (your Windows/macOS system) │
                    └───────────────┬─────────────┘
                                    │
                       (Created automatically by Docker Compose)
                                    │
-                       ┌─────────────────────────┐
-                       │    Docker Network       │
-                       │   "favorites-network"   │
+                       ┌────────────────────────┐
+                       │    Docker Network      │
+                       │   "favorites-network"  │
                        └───────────┬────────────┘
                  internal DNS      │
         mongodb → 172.18.0.2       │       node → 172.18.0.3
@@ -278,11 +278,11 @@ docker system prune -f
         │                                                     │
         │   Containers inside the same Docker network         │
         │                                                     │
-        │   ┌─────────────────────┐       ┌──────────────────┐│
-        │   │  Node.js Container  │       │ MongoDB Container││
-        │   │  (favorites-node)   │ ←→    │   (mongodb)      ││
-        │   └─────────────────────┘       └──────────────────┘│
-        │          | mongoose.connect("mongodb://mongodb:27017/...") │
+        │  ┌─────────────────────┐       ┌──────────────────┐ │
+        │  │  Node.js Container  │       │ MongoDB Container│ │
+        │  │  (favorites-node)   │ ←→    │   (mongodb)      │ │
+        │  └─────────────────────┘       └──────────────────┘ │
+        │   | mongoose.connect("mongodb://mongodb:27017/...") │
         └─────────────────────────────────────────────────────┘
 
         ✔ Both containers can reach each other by service name  
