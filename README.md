@@ -257,4 +257,35 @@ docker system prune -f
 - Publish to registry
 
 ---
-Need more help or want automation (CI pipeline, Compose, Kubernetes)? Let me know.
+
+## 19. Architecture Diagram: Node ↔ Docker Network ↔ MongoDB
+
+                   ┌─────────────────────────────┐
+                   │        Docker Host           │
+                   │  (your Windows/macOS system) │
+                   └───────────────┬─────────────┘
+                                   │
+                      (Created automatically by Docker Compose)
+                                   │
+                       ┌─────────────────────────┐
+                       │    Docker Network       │
+                       │   "favorites-network"   │
+                       └───────────┬────────────┘
+                 internal DNS      │
+        mongodb → 172.18.0.2       │       node → 172.18.0.3
+                                   │
+        ┌─────────────────────────────────────────────────────┐
+        │                                                     │
+        │   Containers inside the same Docker network         │
+        │                                                     │
+        │   ┌─────────────────────┐       ┌──────────────────┐│
+        │   │  Node.js Container  │       │ MongoDB Container││
+        │   │  (favorites-node)   │ ←→    │   (mongodb)      ││
+        │   └─────────────────────┘       └──────────────────┘│
+        │          | mongoose.connect("mongodb://mongodb:27017/...") │
+        └─────────────────────────────────────────────────────┘
+
+        ✔ Both containers can reach each other by service name  
+        ✔ No need for IP addresses  
+        ✔ localhost inside the Node container = Node container, not host  
+
