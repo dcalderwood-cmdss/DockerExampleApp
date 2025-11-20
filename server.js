@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const exists = require('fs').exists;
 const path = require('path');
 
 const express = require('express');
@@ -22,30 +23,24 @@ app.get('/exists', (req, res) => {
 });
 
 app.post('/create', async (req, res) => {
-  try {
-    const title = req.body.title;
-    const content = req.body.text;
+  const title = req.body.title;
+  const content = req.body.text;
 
-    const adjTitle = (title || '').toLowerCase();
+  const adjTitle = title.toLowerCase();
 
-    const tempFilePath = path.join(__dirname, 'temp', adjTitle + '.txt');
-    const finalFilePath = path.join(__dirname, 'feedback', adjTitle + '.txt');
+  const tempFilePath = path.join(__dirname, 'temp', adjTitle + '.txt');
+  const finalFilePath = path.join(__dirname, 'feedback', adjTitle + '.txt');
 
-    await fs.writeFile(tempFilePath, content);
-
-    // Replace deprecated fs.exists with fs.access (resolves if file exists, rejects otherwise)
-    try {
-      await fs.access(finalFilePath);
-      // File exists -> show exists page
+  await fs.writeFile(tempFilePath, content);
+  exists(finalFilePath, async (exists) => {
+    if (exists) {
       res.redirect('/exists');
-    } catch {
-      // File does not exist -> move temp to final
-      await fs.rename(tempFilePath, finalFilePath);
+    } else {
+      await fs.copyFile(tempFilePath, finalFilePath);
+      await fs.unlink(tempFilePath);
       res.redirect('/');
     }
-  } catch (err) {
-    res.status(500).send('An error occurred.');
-  }
+  });
 });
 
 app.listen(80);
